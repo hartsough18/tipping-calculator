@@ -1,0 +1,13 @@
+{
+  "files": [
+    {"path": "index.html", "role": "entry page"},
+    {"path": "styles.css", "role": "stylesheet"},
+    {"path": "app.js", "role": "application logic"},
+    {"path": "pwa_manifest.json", "role": "PWA web app manifest"},
+    {"path": "sw.js", "role": "service worker for offline support"},
+    {"path": "icon-192.png", "role": "PWA icon 192x192"},
+    {"path": "icon-512.png", "role": "PWA icon 512x512"},
+    {"path": "manifest.json", "role": "build manifest listing all files"},
+    {"path": "review.md", "role": "completion report"}
+  ]
+}

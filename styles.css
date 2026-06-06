@@ -1,0 +1,246 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-bg: #f0f4f8;
+  --color-card: #ffffff;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-active: #1e40af;
+  --color-active-text: #ffffff;
+  --color-text: #1e293b;
+  --color-text-secondary: #64748b;
+  --color-border: #e2e8f0;
+  --color-result-bg: #f8fafc;
+  --color-divider: #e2e8f0;
+  --radius-card: 16px;
+  --radius-btn: 10px;
+  --radius-input: 10px;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+header {
+  text-align: center;
+  padding-top: 8px;
+}
+
+header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Bill Input */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 14px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+  user-select: none;
+}
+
+#bill-amount {
+  width: 100%;
+  padding: 14px 14px 14px 34px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-result-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-input);
+  outline: none;
+  transition: border-color 0.15s ease;
+  -moz-appearance: textfield;
+}
+
+#bill-amount::-webkit-outer-spin-button,
+#bill-amount::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#bill-amount::placeholder {
+  color: #cbd5e1;
+  font-weight: 400;
+}
+
+#bill-amount:focus {
+  border-color: var(--color-primary);
+  background: #ffffff;
+}
+
+/* Tip Buttons */
+.tip-buttons-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tip-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tip-buttons {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.tip-btn {
+  flex: 1;
+  padding: 14px 8px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  background: #eff6ff;
+  border: 2px solid #bfdbfe;
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-width: 0;
+}
+
+.tip-btn:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.tip-btn:active {
+  transform: scale(0.97);
+}
+
+.tip-btn.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-active-text);
+}
+
+.tip-btn.active:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+/* Results */
+.results {
+  background: var(--color-result-bg);
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+}
+
+.result-divider {
+  height: 1px;
+  background: var(--color-divider);
+  margin: 0 20px;
+}
+
+.result-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.result-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.result-value.calculated {
+  color: var(--color-primary);
+}
+
+/* Responsive — narrow mobile */
+@media (max-width: 360px) {
+  .card {
+    padding: 22px 16px;
+    gap: 22px;
+  }
+
+  .tip-btn {
+    font-size: 1rem;
+    padding: 12px 4px;
+  }
+
+  #bill-amount {
+    font-size: 1.25rem;
+  }
+
+  .result-value {
+    font-size: 1.2rem;
+  }
+}
