@@ -1,15 +1,21 @@
 (function () {
-  /* ── Tip Calculator ── */
+  /* ── DOM refs ── */
   var billInput = document.getElementById('bill-amount');
-  var numPeopleInput = document.getElementById('num-people');
   var tipAmountEl = document.getElementById('tip-amount');
   var newTotalEl = document.getElementById('new-total');
-  var perPersonEl = document.getElementById('per-person');
   var tipButtons = document.querySelectorAll('.tip-btn');
-  var clearBtn = document.getElementById('clear-btn');
+  var historyBtn = document.getElementById('history-btn');
+  var backBtn = document.getElementById('back-btn');
+  var calcView = document.getElementById('calc-view');
+  var historyView = document.getElementById('history-view');
+  var historyList = document.getElementById('history-list');
+  var historyEmpty = document.getElementById('history-empty');
 
+  /* ── State ── */
   var activeTipPercent = null;
+  var calculationHistory = []; // max 5, newest first
 
+  /* ── Tip Calculator ── */
   function setActiveButton(clickedBtn) {
     tipButtons.forEach(function (btn) {
       btn.classList.remove('active');
@@ -24,13 +30,6 @@
     tipAmountEl.classList.remove('calculated');
     newTotalEl.textContent = '\u2014';
     newTotalEl.classList.remove('calculated');
-    perPersonEl.textContent = '\u2014';
-    perPersonEl.classList.remove('calculated');
-  }
-
-  function clearPerPerson() {
-    perPersonEl.textContent = '\u2014';
-    perPersonEl.classList.remove('calculated');
   }
 
   function showTipResults(tipAmount, newTotal) {
@@ -38,26 +37,18 @@
     tipAmountEl.classList.add('calculated');
     newTotalEl.textContent = '$' + newTotal.toFixed(2);
     newTotalEl.classList.add('calculated');
+  }
 
-    // Per-person calculation
-    var rawPeople = numPeopleInput.value;
-    if (rawPeople === '' || rawPeople === null) {
-      clearPerPerson();
-      return;
+  function saveToHistory(bill, tipPercent, tipAmount, newTotal) {
+    calculationHistory.unshift({
+      bill: bill,
+      tipPercent: tipPercent,
+      tipAmount: tipAmount,
+      newTotal: newTotal
+    });
+    if (calculationHistory.length > 5) {
+      calculationHistory = calculationHistory.slice(0, 5);
     }
-    var people = parseFloat(rawPeople);
-    if (
-      isNaN(people) ||
-      !isFinite(people) ||
-      !Number.isInteger(people) ||
-      people < 1
-    ) {
-      clearPerPerson();
-      return;
-    }
-    var perPerson = newTotal / people;
-    perPersonEl.textContent = '$' + perPerson.toFixed(2);
-    perPersonEl.classList.add('calculated');
   }
 
   function calculate(tipPercent) {
@@ -78,6 +69,7 @@
     var tipAmount = bill * (tipPercent / 100);
     var newTotal = bill + tipAmount;
     showTipResults(tipAmount, newTotal);
+    saveToHistory(bill, tipPercent, tipAmount, newTotal);
   }
 
   tipButtons.forEach(function (btn) {
@@ -95,237 +87,58 @@
     }
   });
 
-  numPeopleInput.addEventListener('input', function () {
-    if (activeTipPercent !== null) {
-      calculate(activeTipPercent);
+  /* ── History View ── */
+  function renderHistory() {
+    // Remove all existing entries (but keep the empty message element)
+    var entries = historyList.querySelectorAll('.history-entry');
+    entries.forEach(function (el) {
+      el.parentNode.removeChild(el);
+    });
+
+    if (calculationHistory.length === 0) {
+      historyEmpty.classList.remove('hidden');
+      return;
     }
+
+    historyEmpty.classList.add('hidden');
+
+    calculationHistory.forEach(function (entry) {
+      var div = document.createElement('div');
+      div.className = 'history-entry';
+
+      div.innerHTML =
+        '<div class="history-entry-row">' +
+          '<span class="history-entry-label">Bill</span>' +
+          '<span class="history-entry-value">$' + entry.bill.toFixed(2) + '</span>' +
+        '</div>' +
+        '<div class="history-entry-row">' +
+          '<span class="history-entry-label">Tip</span>' +
+          '<span class="history-entry-value">' + entry.tipPercent + '%</span>' +
+        '</div>' +
+        '<div class="history-entry-row">' +
+          '<span class="history-entry-label">Tip Amount</span>' +
+          '<span class="history-entry-value accent">$' + entry.tipAmount.toFixed(2) + '</span>' +
+        '</div>' +
+        '<div class="history-entry-row">' +
+          '<span class="history-entry-label">New Total</span>' +
+          '<span class="history-entry-value accent">$' + entry.newTotal.toFixed(2) + '</span>' +
+        '</div>';
+
+      historyList.appendChild(div);
+    });
+  }
+
+  historyBtn.addEventListener('click', function () {
+    renderHistory();
+    calcView.classList.add('hidden');
+    historyView.classList.remove('hidden');
   });
 
-  clearBtn.addEventListener('click', function () {
-    billInput.value = '';
-    numPeopleInput.value = '1';
-    activeTipPercent = null;
-    setActiveButton(null);
-    clearTipResults();
-  });
-
-  /* ── Mode Toggle ── */
-  var tipPanel = document.getElementById('tip-panel');
-  var calcPanel = document.getElementById('calc-panel');
-  var tabTip = document.getElementById('tab-tip');
-  var tabCalc = document.getElementById('tab-calc');
-  var appTitle = document.getElementById('app-title');
-
-  tabTip.addEventListener('click', function () {
-    tabTip.classList.add('active');
-    tabCalc.classList.remove('active');
-    tipPanel.classList.remove('hidden');
-    calcPanel.classList.add('hidden');
-    appTitle.textContent = 'Tip Calculator';
-  });
-
-  tabCalc.addEventListener('click', function () {
-    tabCalc.classList.add('active');
-    tabTip.classList.remove('active');
-    calcPanel.classList.remove('hidden');
-    tipPanel.classList.add('hidden');
-    appTitle.textContent = 'Calculator';
-  });
-
-  /* ── Basic Calculator ── */
-  var calcDisplay = document.getElementById('calc-display');
-
-  var calcState = {
-    displayValue: '0',
-    firstOperand: null,
-    operator: null,
-    waitingForSecond: false,
-    justEvaluated: false
-  };
-
-  function updateCalcDisplay() {
-    calcDisplay.textContent = calcState.displayValue;
-  }
-
-  function calcReset() {
-    calcState.displayValue = '0';
-    calcState.firstOperand = null;
-    calcState.operator = null;
-    calcState.waitingForSecond = false;
-    calcState.justEvaluated = false;
-    // Remove active-op highlight from all operator buttons
-    document.querySelectorAll('.calc-op-main').forEach(function (b) {
-      b.classList.remove('active-op');
-    });
-    updateCalcDisplay();
-  }
-
-  function handleDigit(digit) {
-    if (calcState.waitingForSecond) {
-      calcState.displayValue = digit;
-      calcState.waitingForSecond = false;
-    } else {
-      if (calcState.justEvaluated) {
-        calcState.displayValue = digit;
-        calcState.justEvaluated = false;
-      } else {
-        calcState.displayValue =
-          calcState.displayValue === '0' ? digit : calcState.displayValue + digit;
-      }
-    }
-    updateCalcDisplay();
-  }
-
-  function handleDecimal() {
-    if (calcState.waitingForSecond) {
-      calcState.displayValue = '0.';
-      calcState.waitingForSecond = false;
-      updateCalcDisplay();
-      return;
-    }
-    if (calcState.justEvaluated) {
-      calcState.displayValue = '0.';
-      calcState.justEvaluated = false;
-      updateCalcDisplay();
-      return;
-    }
-    if (calcState.displayValue.indexOf('.') === -1) {
-      calcState.displayValue += '.';
-    }
-    updateCalcDisplay();
-  }
-
-  function performCalculation(first, op, second) {
-    switch (op) {
-      case '+': return first + second;
-      case '−': return first - second;
-      case '×': return first * second;
-      case '÷':
-        if (second === 0) return 'Error';
-        return first / second;
-      default: return second;
-    }
-  }
-
-  function formatResult(value) {
-    if (value === 'Error') return 'Error';
-    // Avoid floating point display issues
-    var str = parseFloat(value.toFixed(10)).toString();
-    return str;
-  }
-
-  function handleOperator(op) {
-    if (op === 'negate') {
-      if (calcState.displayValue !== 'Error') {
-        var val = parseFloat(calcState.displayValue);
-        if (!isNaN(val)) {
-          calcState.displayValue = (val * -1).toString();
-          updateCalcDisplay();
-        }
-      }
-      return;
-    }
-    if (op === 'percent') {
-      if (calcState.displayValue !== 'Error') {
-        var pval = parseFloat(calcState.displayValue);
-        if (!isNaN(pval)) {
-          calcState.displayValue = (pval / 100).toString();
-          updateCalcDisplay();
-        }
-      }
-      return;
-    }
-
-    var currentValue = parseFloat(calcState.displayValue);
-
-    // If there's already a pending operation and we're not waiting for second operand, evaluate first
-    if (calcState.operator !== null && !calcState.waitingForSecond && !calcState.justEvaluated) {
-      var result = performCalculation(calcState.firstOperand, calcState.operator, currentValue);
-      if (result === 'Error') {
-        calcState.displayValue = 'Error';
-        calcState.firstOperand = null;
-        calcState.operator = null;
-        calcState.waitingForSecond = false;
-        calcState.justEvaluated = false;
-        document.querySelectorAll('.calc-op-main').forEach(function (b) {
-          b.classList.remove('active-op');
-        });
-        updateCalcDisplay();
-        return;
-      }
-      calcState.displayValue = formatResult(result);
-      calcState.firstOperand = result;
-      updateCalcDisplay();
-    } else {
-      calcState.firstOperand = isNaN(currentValue) ? 0 : currentValue;
-    }
-
-    calcState.operator = op;
-    calcState.waitingForSecond = true;
-    calcState.justEvaluated = false;
-
-    // Highlight active operator button
-    document.querySelectorAll('.calc-op-main').forEach(function (b) {
-      b.classList.remove('active-op');
-    });
-    document.querySelectorAll('.calc-op-main').forEach(function (b) {
-      if (b.getAttribute('data-op') === op) {
-        b.classList.add('active-op');
-      }
-    });
-  }
-
-  function handleEquals() {
-    if (calcState.operator === null || calcState.waitingForSecond) {
-      calcState.justEvaluated = true;
-      return;
-    }
-    var secondValue = parseFloat(calcState.displayValue);
-    if (isNaN(secondValue)) {
-      calcState.justEvaluated = true;
-      return;
-    }
-    var result = performCalculation(calcState.firstOperand, calcState.operator, secondValue);
-    if (result === 'Error') {
-      calcState.displayValue = 'Error';
-    } else {
-      calcState.displayValue = formatResult(result);
-    }
-    calcState.firstOperand = null;
-    calcState.operator = null;
-    calcState.waitingForSecond = false;
-    calcState.justEvaluated = true;
-    document.querySelectorAll('.calc-op-main').forEach(function (b) {
-      b.classList.remove('active-op');
-    });
-    updateCalcDisplay();
-  }
-
-  // Wire up calculator buttons
-  document.querySelectorAll('.calc-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var action = btn.getAttribute('data-action');
-      if (action === 'ac') {
-        calcReset();
-      } else if (action === 'digit') {
-        if (calcState.displayValue === 'Error') return;
-        handleDigit(btn.getAttribute('data-digit'));
-      } else if (action === 'decimal') {
-        if (calcState.displayValue === 'Error') return;
-        handleDecimal();
-      } else if (action === 'op') {
-        if (calcState.displayValue === 'Error' &&
-            btn.getAttribute('data-op') !== 'negate' &&
-            btn.getAttribute('data-op') !== 'percent') return;
-        handleOperator(btn.getAttribute('data-op'));
-      } else if (action === 'equals') {
-        if (calcState.displayValue === 'Error') return;
-        handleEquals();
-      }
-    });
+  backBtn.addEventListener('click', function () {
+    historyView.classList.add('hidden');
+    calcView.classList.remove('hidden');
   });
 
   /* ── Init ── */
   clearTipResults();
-  updateCalcDisplay();
 })();

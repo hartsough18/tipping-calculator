@@ -12,19 +12,14 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1 id="app-title">Tip Calculator</h1>
-    </header>
-
     <main class="card">
-      <!-- Mode Toggle -->
-      <div class="mode-toggle-bar">
-        <button class="mode-tab active" id="tab-tip" data-mode="tip">Tip Calculator</button>
-        <button class="mode-tab" id="tab-calc" data-mode="calc">Calculator</button>
+      <!-- History toggle button — sole top navigation affordance -->
+      <div class="top-nav">
+        <button class="history-btn" id="history-btn" aria-label="View history">History</button>
       </div>
 
-      <!-- Tip Calculator Panel -->
-      <div id="tip-panel">
+      <!-- Calculator View -->
+      <div id="calc-view">
         <div class="tip-panel-inner">
           <div class="input-group">
             <label for="bill-amount">Bill Amount</label>
@@ -51,21 +46,6 @@
             </div>
           </div>
 
-          <div class="input-group">
-            <label for="num-people">Number of People</label>
-            <div class="input-wrapper">
-              <input
-                type="number"
-                id="num-people"
-                value="1"
-                min="1"
-                step="1"
-                inputmode="numeric"
-                autocomplete="off"
-              >
-            </div>
-          </div>
-
           <div class="results">
             <div class="result-row">
               <span class="result-label">Tip Amount</span>
@@ -76,46 +56,20 @@
               <span class="result-label">New Total</span>
               <span class="result-value" id="new-total">&mdash;</span>
             </div>
-            <div class="result-divider"></div>
-            <div class="result-row">
-              <span class="result-label">Per Person</span>
-              <span class="result-value" id="per-person">&mdash;</span>
-            </div>
           </div>
-
-          <button class="clear-btn" id="clear-btn">Clear</button>
         </div>
       </div>
 
-      <!-- Basic Calculator Panel (hidden by default) -->
-      <div id="calc-panel" class="hidden">
-        <div class="calc-display-wrapper">
-          <div class="calc-display" id="calc-display">0</div>
-        </div>
-        <div class="calc-grid">
-          <button class="calc-btn calc-ac" data-action="ac">AC</button>
-          <button class="calc-btn calc-op" data-action="op" data-op="negate">+/−</button>
-          <button class="calc-btn calc-op" data-action="op" data-op="percent">%</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="÷">÷</button>
-
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="7">7</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="8">8</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="9">9</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="×">×</button>
-
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="4">4</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="5">5</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="6">6</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="−">−</button>
-
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="1">1</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="2">2</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="3">3</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="+">+</button>
-
-          <button class="calc-btn calc-digit calc-zero" data-action="digit" data-digit="0">0</button>
-          <button class="calc-btn calc-digit" data-action="decimal">.</button>
-          <button class="calc-btn calc-equals" data-action="equals">=</button>
+      <!-- History View (hidden by default) -->
+      <div id="history-view" class="hidden">
+        <div class="history-panel-inner">
+          <div class="history-header">
+            <button class="back-btn" id="back-btn" aria-label="Back to calculator">&larr; Calculator</button>
+            <h2 class="history-title">Recent Calculations</h2>
+          </div>
+          <div id="history-list" class="history-list">
+            <p class="history-empty" id="history-empty">No history yet</p>
+          </div>
         </div>
       </div>
     </main>
