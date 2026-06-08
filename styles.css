@@ -23,11 +23,6 @@
   --color-input-bg: #f8fafc;
   --color-input-focus-bg: #ffffff;
   --color-placeholder: #cbd5e1;
-  --color-history-btn-bg: transparent;
-  --color-history-btn-text: #64748b;
-  --color-history-btn-border: #e2e8f0;
-  --color-history-entry-bg: #f8fafc;
-  --color-history-entry-border: #e2e8f0;
   --radius-card: 20px;
   --radius-btn: 14px;
   --radius-input: 14px;
@@ -54,11 +49,6 @@
   --color-input-bg: #0f172a;
   --color-input-focus-bg: #1e293b;
   --color-placeholder: #475569;
-  --color-history-btn-bg: transparent;
-  --color-history-btn-text: #94a3b8;
-  --color-history-btn-border: #334155;
-  --color-history-entry-bg: #0f172a;
-  --color-history-entry-border: #334155;
   --shadow-card: 0 4px 32px rgba(0, 0, 0, 0.5);
 }
 
@@ -96,50 +86,13 @@ body {
   min-height: 100vh;
 }
 
-/* Top nav — history button only */
-.top-nav {
-  display: flex;
-  justify-content: flex-end;
-  padding: 18px 20px 0;
-}
-
-.history-btn {
-  padding: 8px 18px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-history-btn-text);
-  background: var(--color-history-btn-bg);
-  border: 1.5px solid var(--color-history-btn-border);
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-.history-btn:hover {
-  color: var(--color-text);
-  border-color: var(--color-primary);
-}
-
-/* Hidden utility */
-.hidden {
-  display: none !important;
-}
-
-/* Calculator View */
-#calc-view {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Calculator panel inner */
 .tip-panel-inner {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 28px 24px 40px;
+  padding: 40px 24px 48px;
 }
 
 /* Bill Input */
@@ -226,15 +179,15 @@ body {
 
 .tip-btn {
   flex: 1;
-  padding: 22px 8px;
-  font-size: 1.4rem;
+  padding: 26px 8px;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--color-primary);
   background: var(--color-tip-btn-bg);
   border: 2px solid var(--color-tip-btn-border);
   border-radius: var(--radius-btn);
   cursor: pointer;
-  min-height: 72px;
+  min-height: 80px;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
@@ -273,23 +226,23 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px 24px;
+  padding: 26px 28px;
 }
 
 .result-divider {
   height: 1px;
   background: var(--color-divider);
-  margin: 0 24px;
+  margin: 0 28px;
 }
 
 .result-label {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-text-secondary);
 }
 
 .result-value {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 800;
   color: var(--color-text);
   letter-spacing: -0.02em;
@@ -299,109 +252,17 @@ body {
   color: var(--color-primary);
 }
 
-/* History View */
-#history-view {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.history-panel-inner {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px 24px 40px;
-}
-
-.history-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.back-btn {
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--color-history-btn-text);
-  background: var(--color-history-btn-bg);
-  border: 1.5px solid var(--color-history-btn-border);
-  border-radius: 20px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-.back-btn:hover {
-  color: var(--color-text);
-  border-color: var(--color-primary);
-}
-
-.history-title {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.history-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.history-empty {
-  font-size: 1rem;
-  color: var(--color-text-secondary);
-  text-align: center;
-  padding: 40px 0;
-}
-
-.history-entry {
-  background: var(--color-history-entry-bg);
-  border: 1px solid var(--color-history-entry-border);
-  border-radius: 14px;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.history-entry-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.history-entry-label {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  font-weight: 500;
-}
-
-.history-entry-value {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.history-entry-value.accent {
-  color: var(--color-primary);
-}
-
 /* Responsive — narrow mobile */
 @media (max-width: 360px) {
   .tip-panel-inner {
     gap: 24px;
-    padding: 20px 16px 32px;
+    padding: 28px 16px 36px;
   }
 
   .tip-btn {
-    font-size: 1.2rem;
-    padding: 18px 4px;
-    min-height: 62px;
+    font-size: 1.25rem;
+    padding: 20px 4px;
+    min-height: 68px;
   }
 
   #bill-amount {
@@ -410,10 +271,10 @@ body {
   }
 
   .result-value {
-    font-size: 1.45rem;
+    font-size: 1.6rem;
   }
 
   .result-row {
-    padding: 18px 18px;
+    padding: 20px 20px;
   }
 }
