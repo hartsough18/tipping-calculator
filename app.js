@@ -114,14 +114,12 @@
   var calcPanel = document.getElementById('calc-panel');
   var tabTip = document.getElementById('tab-tip');
   var tabCalc = document.getElementById('tab-calc');
-  var appTitle = document.getElementById('app-title');
 
   tabTip.addEventListener('click', function () {
     tabTip.classList.add('active');
     tabCalc.classList.remove('active');
     tipPanel.classList.remove('hidden');
     calcPanel.classList.add('hidden');
-    appTitle.textContent = 'Tip Calculator';
   });
 
   tabCalc.addEventListener('click', function () {
@@ -129,7 +127,6 @@
     tabTip.classList.remove('active');
     calcPanel.classList.remove('hidden');
     tipPanel.classList.add('hidden');
-    appTitle.textContent = 'Calculator';
   });
 
   /* ── Basic Calculator ── */

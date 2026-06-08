@@ -102,7 +102,7 @@ body {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 24px 16px 40px;
+  padding: 16px 16px 40px;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -111,19 +111,7 @@ body {
   max-width: 420px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-}
-
-header {
-  text-align: center;
-  padding-top: 8px;
-}
-
-header h1 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text);
-  letter-spacing: -0.02em;
+  gap: 0;
 }
 
 .card {
@@ -399,7 +387,7 @@ header h1 {
   background: var(--color-calc-display-bg);
   border-radius: 12px;
   padding: 16px 20px;
-  min-height: 80px;
+  min-height: 88px;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -407,7 +395,7 @@ header h1 {
 }
 
 .calc-display {
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 300;
   color: var(--color-calc-display-text);
   font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', 'Segoe UI', monospace;
@@ -425,8 +413,8 @@ header h1 {
 
 .calc-btn {
   padding: 0;
-  height: 68px;
-  font-size: 1.25rem;
+  height: 78px;
+  font-size: 1.45rem;
   font-weight: 500;
   border: none;
   border-radius: 50%;
@@ -487,7 +475,7 @@ header h1 {
 .calc-equals {
   background: var(--color-primary);
   color: #ffffff;
-  font-size: 1.5rem;
+  font-size: 1.65rem;
 }
 
 .calc-equals:hover {
@@ -497,9 +485,9 @@ header h1 {
 /* Zero button spans 2 columns */
 .calc-zero {
   grid-column: span 2;
-  border-radius: 34px;
+  border-radius: 39px;
   justify-content: flex-start;
-  padding-left: 26px;
+  padding-left: 28px;
 }
 
 /* Responsive — narrow mobile */
@@ -526,11 +514,15 @@ header h1 {
   }
 
   .calc-btn {
-    height: 58px;
-    font-size: 1.1rem;
+    height: 66px;
+    font-size: 1.25rem;
   }
 
   .calc-display {
-    font-size: 2rem;
+    font-size: 2.25rem;
+  }
+
+  .calc-equals {
+    font-size: 1.4rem;
   }
 }

@@ -12,19 +12,15 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1 id="app-title">Tip Calculator</h1>
-    </header>
-
     <main class="card">
       <!-- Mode Toggle -->
       <div class="mode-toggle-bar">
-        <button class="mode-tab active" id="tab-tip" data-mode="tip">Tip Calculator</button>
-        <button class="mode-tab" id="tab-calc" data-mode="calc">Calculator</button>
+        <button class="mode-tab" id="tab-tip" data-mode="tip">Tip Calculator</button>
+        <button class="mode-tab active" id="tab-calc" data-mode="calc">Calculator</button>
       </div>
 
-      <!-- Tip Calculator Panel -->
-      <div id="tip-panel">
+      <!-- Tip Calculator Panel (hidden by default) -->
+      <div id="tip-panel" class="hidden">
         <div class="tip-panel-inner">
           <div class="input-group">
             <label for="bill-amount">Bill Amount</label>
@@ -87,8 +83,8 @@
         </div>
       </div>
 
-      <!-- Basic Calculator Panel (hidden by default) -->
-      <div id="calc-panel" class="hidden">
+      <!-- Basic Calculator Panel (visible by default) -->
+      <div id="calc-panel">
         <div class="calc-display-wrapper">
           <div class="calc-display" id="calc-display">0</div>
         </div>
