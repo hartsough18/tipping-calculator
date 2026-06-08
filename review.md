@@ -2,44 +2,65 @@
 
 ## What Was Built
 
-A fully functional single-screen tipping calculator static web app. The app runs by opening `index.html` directly in any browser (`file://` — no web server required). It works entirely offline with no external dependencies.
+A fully functional tipping calculator and basic arithmetic calculator static web app. The app runs by opening `index.html` directly in any browser (`file://` — no web server required). It works entirely offline with no external dependencies.
 
 ## How to Open
 
 Open `index.html` in any modern web browser. No server, no build step, no npm install required.
 
-## Files Created
+## Files
 
 | File | Role |
 |------|------|
-| `index.html` | Entry page — full markup for the single-screen UI |
-| `styles.css` | Complete stylesheet — layout, colors, typography, responsive design |
-| `app.js` | All application logic — calculation, validation, DOM updates |
+| `index.html` | Entry page — full markup for both calculator panels |
+| `styles.css` | Complete stylesheet — dark/light theme tokens, layout, responsive design |
+| `app.js` | All application logic — tip calculation, split bill, basic calculator, mode toggle |
 | `pwa_manifest.json` | Web App Manifest for PWA home-screen install |
 | `sw.js` | Service worker — caches app shell on install, serves from cache offline |
-| `icon-192.png` | PWA icon (192×192) — SVG-based blue icon with % symbol |
-| `icon-512.png` | PWA icon (512×512) — SVG-based blue icon with % symbol |
+| `icon-192.png` | PWA icon (192×192) |
+| `icon-512.png` | PWA icon (512×512) |
 | `manifest.json` | Build manifest listing all files |
 | `review.md` | This completion report |
 
-## App Behavior
+## Changes Made in This Iteration
 
-- **Single screen**: One card-style layout containing all elements — no navigation, no modals, no pages.
-- **Bill input**: `type="number"` field with `min="0.01"` and `step="0.01"`, numeric keypad on mobile, dollar sign prefix displayed via CSS overlay.
-- **Three tip buttons**: 10%, 20%, 30% — none active on initial load. Tapping a button marks it `.active` with a blue filled style and triggers calculation.
-- **Results**: Two output rows — "Tip Amount" and "New Total" — both show an em dash (`—`) on load and until a valid bill and tip button are provided.
-- **Instant recalculation**: Editing the bill amount after a tip button is already active immediately recalculates without requiring another button tap.
-- **Input validation**: `parseFloat` + `isNaN` + `isFinite` guards handle empty input, non-numeric strings (which `type="number"` returns as empty string), zero, and negative values. Zero shows `$0.00` for both outputs. Invalid/empty shows `—`.
-- **No NaN/undefined displayed**: All edge cases are caught before any arithmetic runs.
+### Dark Mode (Default)
+- Added `data-theme="dark"` to the `<html>` element so the app loads in dark mode immediately.
+- Added a full set of `[data-theme="dark"]` CSS custom property overrides: dark background (`#0f172a`), dark card surface (`#1e293b`), light text (`#f1f5f9`), muted borders, and dark-appropriate button surfaces for all elements in both panels.
+
+### Number of People / Per-Person Split
+- Added a "Number of People" `<input type="number">` (default `1`, min `1`, step `1`) below the tip buttons.
+- Added a "Per Person" output row in the results panel below "New Total".
+- Per-person logic validates that the people value is a positive integer ≥ 1 (using `Number.isInteger` and `>= 1` checks); zero, negatives, non-integers, and empty values all show `—` for Per Person while Tip Amount and New Total remain displayed if bill and tip are valid.
+- Per-person recalculates instantly on any change to bill input, tip button, or people input.
+
+### Clear Button
+- Added a "Clear" button below the results panel.
+- Clicking Clear empties the bill input, resets people to `1`, removes the active class from all tip buttons, and resets all three output fields to `—`.
+
+### Mode Toggle
+- Added a two-tab toggle bar ("Tip Calculator" / "Calculator") at the top of the card.
+- Clicking a tab shows the corresponding panel and hides the other; the active tab is highlighted.
+- The page `<h1>` title updates to match the current mode.
+
+### Basic Calculator
+- Added a full basic calculator panel with: display area, digit buttons 0–9, decimal point, operators (÷ × − +), AC (all-clear), and = (equals).
+- State machine tracks `firstOperand`, `operator`, `waitingForSecond`, and `justEvaluated` flags.
+- All four arithmetic operations implemented manually via a `switch` statement — no `eval()`.
+- Divide-by-zero shows "Error"; AC clears the error and resets to `0`.
+- Only one decimal point allowed per number entry.
+- Active operator button highlighted while waiting for second operand.
+- Zero button spans two columns (standard calculator layout).
+
+### Bug Fixes
+- Fixed: bill amount of `0` now correctly shows `—` (previously showed `$0.00`). The validation now uses `bill <= 0` to reject zero and negatives, consistent with the `min="0.01"` HTML attribute.
+- Fixed: clearing the bill input while a tip button is active now correctly shows `—` for all outputs (previously could show `$0.00`).
 
 ## Key Decisions
 
-- **Vanilla JS only**: No framework, no bundler, no CDN. The app is three files and trivially small — a framework would be pure overhead.
-- **Classic `<script src="app.js">` tag**: Not `type="module"` — ES modules fail under `file://` due to CORS restrictions. Classic script tag works universally.
-- **IIFE wrapper in app.js**: Wraps all logic in an immediately-invoked function expression to avoid polluting the global scope, without using ES module syntax.
-- **`type="number"` input**: Surfaces numeric keypad on mobile automatically. Non-numeric input returns empty string (not the garbage text), so `parseFloat("")` returns `NaN` and the guard catches it cleanly.
-- **Zero bill shows `$0.00`**: A bill of zero is technically valid arithmetic (tip = 0, total = 0). The `min="0.01"` HTML attribute discourages it but JS allows it to display correctly rather than showing `—`, satisfying acceptance criterion 11.
-- **`.active` CSS class toggling**: Simple, readable, no state object needed. Previous button loses `.active`, clicked button gains it.
-- **`toFixed(2)` on all outputs**: Prevents floating-point display artifacts like `8.999999999`. Output strings are never re-parsed after formatting.
-- **PWA support**: Manifest, service worker, and icon files included for home-screen install on mobile devices. Service worker caches the app shell on install and serves from cache when offline.
-- **Responsive CSS**: Flexbox layout with `max-width: 420px` centered card. `@media (max-width: 360px)` breakpoint reduces font sizes and padding for very narrow viewports. All three buttons remain visible in a single row at all mobile widths.
+- **Dark mode via `data-theme` attribute on `<html>`**: Allows CSS custom properties to cascade to all elements without JavaScript on load. The attribute is set in HTML so dark mode is immediate — no flash of light mode.
+- **CSS custom properties for theming**: All color values are tokens; both panels inherit dark mode automatically with no per-element overrides needed.
+- **Per-person validation uses `Number.isInteger`**: Explicitly rejects `1.5`, `0`, negatives, and empty — no silent fallback to `1`.
+- **Basic calculator uses explicit state machine**: No `eval()`, no `Function()`. Arithmetic is a plain `switch` on the stored operator string.
+- **Mode toggle is a tab bar, not a hidden checkbox**: Cleaner semantics, accessible, works without JS tricks.
+- **Vanilla JS only**: No framework, no bundler, no CDN. Classic `<script src="app.js">` tag for `file://` compatibility.

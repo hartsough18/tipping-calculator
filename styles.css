@@ -4,23 +4,90 @@
   padding: 0;
 }
 
+/* Light theme tokens */
 :root {
   --color-bg: #f0f4f8;
   --color-card: #ffffff;
   --color-primary: #2563eb;
   --color-primary-hover: #1d4ed8;
-  --color-primary-active: #1e40af;
   --color-active-text: #ffffff;
   --color-text: #1e293b;
   --color-text-secondary: #64748b;
   --color-border: #e2e8f0;
   --color-result-bg: #f8fafc;
   --color-divider: #e2e8f0;
+  --color-tip-btn-bg: #eff6ff;
+  --color-tip-btn-border: #bfdbfe;
+  --color-tip-btn-hover: #dbeafe;
+  --color-tip-btn-hover-border: #93c5fd;
+  --color-clear-btn-bg: #f1f5f9;
+  --color-clear-btn-border: #cbd5e1;
+  --color-clear-btn-text: #475569;
+  --color-clear-btn-hover: #e2e8f0;
+  --color-input-bg: #f8fafc;
+  --color-input-focus-bg: #ffffff;
+  --color-placeholder: #cbd5e1;
+  --color-calc-display-bg: #1e293b;
+  --color-calc-display-text: #f8fafc;
+  --color-calc-digit-bg: #e2e8f0;
+  --color-calc-digit-text: #1e293b;
+  --color-calc-digit-hover: #cbd5e1;
+  --color-calc-op-bg: #94a3b8;
+  --color-calc-op-text: #ffffff;
+  --color-calc-op-hover: #7c8fa6;
+  --color-calc-ac-bg: #64748b;
+  --color-calc-ac-text: #ffffff;
+  --color-calc-ac-hover: #475569;
+  --color-mode-tab-bg: #e2e8f0;
+  --color-mode-tab-text: #64748b;
+  --color-mode-tab-active-bg: #2563eb;
+  --color-mode-tab-active-text: #ffffff;
   --radius-card: 16px;
   --radius-btn: 10px;
   --radius-input: 10px;
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
   --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Dark theme tokens */
+[data-theme="dark"] {
+  --color-bg: #0f172a;
+  --color-card: #1e293b;
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-active-text: #ffffff;
+  --color-text: #f1f5f9;
+  --color-text-secondary: #94a3b8;
+  --color-border: #334155;
+  --color-result-bg: #0f172a;
+  --color-divider: #334155;
+  --color-tip-btn-bg: #1e3a5f;
+  --color-tip-btn-border: #2563eb;
+  --color-tip-btn-hover: #1d4ed8;
+  --color-tip-btn-hover-border: #3b82f6;
+  --color-clear-btn-bg: #334155;
+  --color-clear-btn-border: #475569;
+  --color-clear-btn-text: #94a3b8;
+  --color-clear-btn-hover: #475569;
+  --color-input-bg: #0f172a;
+  --color-input-focus-bg: #1e293b;
+  --color-placeholder: #475569;
+  --color-calc-display-bg: #0f172a;
+  --color-calc-display-text: #f1f5f9;
+  --color-calc-digit-bg: #334155;
+  --color-calc-digit-text: #f1f5f9;
+  --color-calc-digit-hover: #475569;
+  --color-calc-op-bg: #475569;
+  --color-calc-op-text: #f1f5f9;
+  --color-calc-op-hover: #64748b;
+  --color-calc-ac-bg: #64748b;
+  --color-calc-ac-text: #f1f5f9;
+  --color-calc-ac-hover: #94a3b8;
+  --color-mode-tab-bg: #334155;
+  --color-mode-tab-text: #94a3b8;
+  --color-mode-tab-active-bg: #3b82f6;
+  --color-mode-tab-active-text: #ffffff;
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
 html, body {
@@ -36,6 +103,7 @@ body {
   align-items: flex-start;
   justify-content: center;
   padding: 24px 16px 40px;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .container {
@@ -62,10 +130,56 @@ header h1 {
   background: var(--color-card);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  padding: 28px 24px;
+  padding: 20px 24px 28px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 0;
+}
+
+/* Mode Toggle */
+.mode-toggle-bar {
+  display: flex;
+  gap: 4px;
+  background: var(--color-mode-tab-bg);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.mode-tab {
+  flex: 1;
+  padding: 9px 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-mode-tab-text);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.mode-tab.active {
+  background: var(--color-mode-tab-active-bg);
+  color: var(--color-mode-tab-active-text);
+}
+
+.mode-tab:not(.active):hover {
+  color: var(--color-text);
+}
+
+/* Tip Panel */
+.tip-panel-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Hidden utility */
+.hidden {
+  display: none !important;
 }
 
 /* Bill Input */
@@ -105,11 +219,11 @@ header h1 {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--color-text);
-  background: var(--color-result-bg);
+  background: var(--color-input-bg);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-input);
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
   -moz-appearance: textfield;
 }
 
@@ -120,13 +234,39 @@ header h1 {
 }
 
 #bill-amount::placeholder {
-  color: #cbd5e1;
+  color: var(--color-placeholder);
   font-weight: 400;
 }
 
 #bill-amount:focus {
   border-color: var(--color-primary);
-  background: #ffffff;
+  background: var(--color-input-focus-bg);
+}
+
+/* Number of People input */
+#num-people {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-input-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-input);
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  -moz-appearance: textfield;
+}
+
+#num-people::-webkit-outer-spin-button,
+#num-people::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#num-people:focus {
+  border-color: var(--color-primary);
+  background: var(--color-input-focus-bg);
 }
 
 /* Tip Buttons */
@@ -156,8 +296,8 @@ header h1 {
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--color-primary);
-  background: #eff6ff;
-  border: 2px solid #bfdbfe;
+  background: var(--color-tip-btn-bg);
+  border: 2px solid var(--color-tip-btn-border);
   border-radius: var(--radius-btn);
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
@@ -167,8 +307,8 @@ header h1 {
 }
 
 .tip-btn:hover {
-  background: #dbeafe;
-  border-color: #93c5fd;
+  background: var(--color-tip-btn-hover);
+  border-color: var(--color-tip-btn-hover-border);
 }
 
 .tip-btn:active {
@@ -198,7 +338,7 @@ header h1 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
+  padding: 16px 20px;
 }
 
 .result-divider {
@@ -224,11 +364,152 @@ header h1 {
   color: var(--color-primary);
 }
 
+/* Clear Button */
+.clear-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-clear-btn-text);
+  background: var(--color-clear-btn-bg);
+  border: 2px solid var(--color-clear-btn-border);
+  border-radius: var(--radius-btn);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.clear-btn:hover {
+  background: var(--color-clear-btn-hover);
+}
+
+.clear-btn:active {
+  transform: scale(0.98);
+}
+
+/* Basic Calculator Panel */
+#calc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.calc-display-wrapper {
+  background: var(--color-calc-display-bg);
+  border-radius: 12px;
+  padding: 16px 20px;
+  min-height: 80px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  overflow: hidden;
+}
+
+.calc-display {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: var(--color-calc-display-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', 'Segoe UI', monospace;
+  letter-spacing: -0.02em;
+  word-break: break-all;
+  text-align: right;
+  line-height: 1.1;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.calc-btn {
+  padding: 0;
+  height: 68px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.1s ease, transform 0.08s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calc-btn:active {
+  transform: scale(0.93);
+}
+
+.calc-digit {
+  background: var(--color-calc-digit-bg);
+  color: var(--color-calc-digit-text);
+}
+
+.calc-digit:hover {
+  background: var(--color-calc-digit-hover);
+}
+
+.calc-op {
+  background: var(--color-calc-op-bg);
+  color: var(--color-calc-op-text);
+}
+
+.calc-op:hover {
+  background: var(--color-calc-op-hover);
+}
+
+.calc-op-main {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.calc-op-main:hover {
+  background: var(--color-primary-hover);
+}
+
+.calc-op-main.active-op {
+  background: #ffffff;
+  color: var(--color-primary);
+}
+
+.calc-ac {
+  background: var(--color-calc-ac-bg);
+  color: var(--color-calc-ac-text);
+}
+
+.calc-ac:hover {
+  background: var(--color-calc-ac-hover);
+}
+
+.calc-equals {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 1.5rem;
+}
+
+.calc-equals:hover {
+  background: var(--color-primary-hover);
+}
+
+/* Zero button spans 2 columns */
+.calc-zero {
+  grid-column: span 2;
+  border-radius: 34px;
+  justify-content: flex-start;
+  padding-left: 26px;
+}
+
 /* Responsive — narrow mobile */
 @media (max-width: 360px) {
   .card {
-    padding: 22px 16px;
-    gap: 22px;
+    padding: 16px 14px 22px;
+  }
+
+  .tip-panel-inner {
+    gap: 18px;
   }
 
   .tip-btn {
@@ -242,5 +523,14 @@ header h1 {
 
   .result-value {
     font-size: 1.2rem;
+  }
+
+  .calc-btn {
+    height: 58px;
+    font-size: 1.1rem;
+  }
+
+  .calc-display {
+    font-size: 2rem;
   }
 }
