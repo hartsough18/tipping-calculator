@@ -88,6 +88,15 @@
         <div class="calc-display-wrapper">
           <div class="calc-display" id="calc-display">0</div>
         </div>
+
+        <!-- History Panel (hidden by default, toggled by Last 5 button) -->
+        <div id="calc-history-panel" class="calc-history-panel hidden">
+          <div class="calc-history-header">Recent Calculations</div>
+          <ul class="calc-history-list" id="calc-history-list">
+            <li class="calc-history-empty">No calculations yet</li>
+          </ul>
+        </div>
+
         <div class="calc-grid">
           <button class="calc-btn calc-ac" data-action="ac">AC</button>
           <button class="calc-btn calc-op" data-action="op" data-op="negate">+/−</button>
@@ -109,6 +118,7 @@
           <button class="calc-btn calc-digit" data-action="digit" data-digit="3">3</button>
           <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="+">+</button>
 
+          <button class="calc-btn calc-history-btn" id="calc-history-btn" data-action="history">Last 5</button>
           <button class="calc-btn calc-digit calc-zero" data-action="digit" data-digit="0">0</button>
           <button class="calc-btn calc-digit" data-action="decimal">.</button>
           <button class="calc-btn calc-equals" data-action="equals">=</button>

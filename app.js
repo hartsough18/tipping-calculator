@@ -131,13 +131,24 @@
 
   /* ── Basic Calculator ── */
   var calcDisplay = document.getElementById('calc-display');
+  var calcHistoryPanel = document.getElementById('calc-history-panel');
+  var calcHistoryList = document.getElementById('calc-history-list');
+  var calcHistoryBtn = document.getElementById('calc-history-btn');
+
+  // History: stores up to 5 most recent completed calculations
+  // Each entry: { expression: string, result: string }
+  var calcHistory = [];
+  var historyVisible = false;
 
   var calcState = {
     displayValue: '0',
     firstOperand: null,
     operator: null,
     waitingForSecond: false,
-    justEvaluated: false
+    justEvaluated: false,
+    // Track expression for history
+    expressionFirst: null,
+    expressionOp: null
   };
 
   function updateCalcDisplay() {
@@ -150,6 +161,8 @@
     calcState.operator = null;
     calcState.waitingForSecond = false;
     calcState.justEvaluated = false;
+    calcState.expressionFirst = null;
+    calcState.expressionOp = null;
     // Remove active-op highlight from all operator buttons
     document.querySelectorAll('.calc-op-main').forEach(function (b) {
       b.classList.remove('active-op');
@@ -211,6 +224,51 @@
     return str;
   }
 
+  function addToHistory(expression, result) {
+    calcHistory.unshift({ expression: expression, result: result });
+    if (calcHistory.length > 5) {
+      calcHistory = calcHistory.slice(0, 5);
+    }
+    if (historyVisible) {
+      renderHistory();
+    }
+  }
+
+  function renderHistory() {
+    calcHistoryList.innerHTML = '';
+    if (calcHistory.length === 0) {
+      var emptyLi = document.createElement('li');
+      emptyLi.className = 'calc-history-empty';
+      emptyLi.textContent = 'No calculations yet';
+      calcHistoryList.appendChild(emptyLi);
+      return;
+    }
+    calcHistory.forEach(function (entry) {
+      var li = document.createElement('li');
+      var exprSpan = document.createElement('span');
+      exprSpan.className = 'calc-history-expr';
+      exprSpan.textContent = entry.expression;
+      var resultSpan = document.createElement('span');
+      resultSpan.className = 'calc-history-result';
+      resultSpan.textContent = '= ' + entry.result;
+      li.appendChild(exprSpan);
+      li.appendChild(resultSpan);
+      calcHistoryList.appendChild(li);
+    });
+  }
+
+  function toggleHistory() {
+    historyVisible = !historyVisible;
+    if (historyVisible) {
+      renderHistory();
+      calcHistoryPanel.classList.remove('hidden');
+      calcHistoryBtn.classList.add('history-open');
+    } else {
+      calcHistoryPanel.classList.add('hidden');
+      calcHistoryBtn.classList.remove('history-open');
+    }
+  }
+
   function handleOperator(op) {
     if (op === 'negate') {
       if (calcState.displayValue !== 'Error') {
@@ -244,6 +302,8 @@
         calcState.operator = null;
         calcState.waitingForSecond = false;
         calcState.justEvaluated = false;
+        calcState.expressionFirst = null;
+        calcState.expressionOp = null;
         document.querySelectorAll('.calc-op-main').forEach(function (b) {
           b.classList.remove('active-op');
         });
@@ -257,6 +317,8 @@
       calcState.firstOperand = isNaN(currentValue) ? 0 : currentValue;
     }
 
+    calcState.expressionFirst = calcState.displayValue;
+    calcState.expressionOp = op;
     calcState.operator = op;
     calcState.waitingForSecond = true;
     calcState.justEvaluated = false;
@@ -282,16 +344,29 @@
       calcState.justEvaluated = true;
       return;
     }
+    var secondStr = calcState.displayValue;
     var result = performCalculation(calcState.firstOperand, calcState.operator, secondValue);
+    var resultStr;
     if (result === 'Error') {
+      resultStr = 'Error';
       calcState.displayValue = 'Error';
     } else {
-      calcState.displayValue = formatResult(result);
+      resultStr = formatResult(result);
+      calcState.displayValue = resultStr;
     }
+
+    // Build expression string for history
+    var exprFirst = calcState.expressionFirst !== null ? calcState.expressionFirst : String(calcState.firstOperand);
+    var exprOp = calcState.expressionOp !== null ? calcState.expressionOp : calcState.operator;
+    var expression = exprFirst + ' ' + exprOp + ' ' + secondStr;
+    addToHistory(expression, resultStr);
+
     calcState.firstOperand = null;
     calcState.operator = null;
     calcState.waitingForSecond = false;
     calcState.justEvaluated = true;
+    calcState.expressionFirst = null;
+    calcState.expressionOp = null;
     document.querySelectorAll('.calc-op-main').forEach(function (b) {
       b.classList.remove('active-op');
     });
@@ -318,6 +393,8 @@
       } else if (action === 'equals') {
         if (calcState.displayValue === 'Error') return;
         handleEquals();
+      } else if (action === 'history') {
+        toggleHistory();
       }
     });
   });
