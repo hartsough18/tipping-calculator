@@ -39,7 +39,6 @@
     newTotalEl.textContent = '$' + newTotal.toFixed(2);
     newTotalEl.classList.add('calculated');
 
-    // Per-person calculation
     var rawPeople = numPeopleInput.value;
     if (rawPeople === '' || rawPeople === null) {
       clearPerPerson();
@@ -115,13 +114,6 @@
   var tabTip = document.getElementById('tab-tip');
   var tabCalc = document.getElementById('tab-calc');
 
-  tabTip.addEventListener('click', function () {
-    tabTip.classList.add('active');
-    tabCalc.classList.remove('active');
-    tipPanel.classList.remove('hidden');
-    calcPanel.classList.add('hidden');
-  });
-
   tabCalc.addEventListener('click', function () {
     tabCalc.classList.add('active');
     tabTip.classList.remove('active');
@@ -129,14 +121,22 @@
     tipPanel.classList.add('hidden');
   });
 
+  tabTip.addEventListener('click', function () {
+    tabTip.classList.add('active');
+    tabCalc.classList.remove('active');
+    tipPanel.classList.remove('hidden');
+    calcPanel.classList.add('hidden');
+  });
+
   /* ── Basic Calculator ── */
   var calcDisplay = document.getElementById('calc-display');
-  var calcHistoryPanel = document.getElementById('calc-history-panel');
+  var historyOverlay = document.getElementById('history-overlay');
   var calcHistoryList = document.getElementById('calc-history-list');
   var calcHistoryBtn = document.getElementById('calc-history-btn');
+  var historyBackdrop = document.getElementById('history-backdrop');
+  var historyPopupClose = document.getElementById('history-popup-close');
 
   // History: stores up to 5 most recent completed calculations
-  // Each entry: { expression: string, result: string }
   var calcHistory = [];
   var historyVisible = false;
 
@@ -146,7 +146,6 @@
     operator: null,
     waitingForSecond: false,
     justEvaluated: false,
-    // Track expression for history
     expressionFirst: null,
     expressionOp: null
   };
@@ -163,7 +162,6 @@
     calcState.justEvaluated = false;
     calcState.expressionFirst = null;
     calcState.expressionOp = null;
-    // Remove active-op highlight from all operator buttons
     document.querySelectorAll('.calc-op-main').forEach(function (b) {
       b.classList.remove('active-op');
     });
@@ -219,7 +217,6 @@
 
   function formatResult(value) {
     if (value === 'Error') return 'Error';
-    // Avoid floating point display issues
     var str = parseFloat(value.toFixed(10)).toString();
     return str;
   }
@@ -257,17 +254,36 @@
     });
   }
 
+  function openHistory() {
+    historyVisible = true;
+    renderHistory();
+    historyOverlay.classList.remove('hidden');
+    calcHistoryBtn.classList.add('history-open');
+  }
+
+  function closeHistory() {
+    historyVisible = false;
+    historyOverlay.classList.add('hidden');
+    calcHistoryBtn.classList.remove('history-open');
+  }
+
   function toggleHistory() {
-    historyVisible = !historyVisible;
     if (historyVisible) {
-      renderHistory();
-      calcHistoryPanel.classList.remove('hidden');
-      calcHistoryBtn.classList.add('history-open');
+      closeHistory();
     } else {
-      calcHistoryPanel.classList.add('hidden');
-      calcHistoryBtn.classList.remove('history-open');
+      openHistory();
     }
   }
+
+  // Close on backdrop click
+  historyBackdrop.addEventListener('click', function () {
+    closeHistory();
+  });
+
+  // Close on X button
+  historyPopupClose.addEventListener('click', function () {
+    closeHistory();
+  });
 
   function handleOperator(op) {
     if (op === 'negate') {
@@ -293,7 +309,6 @@
 
     var currentValue = parseFloat(calcState.displayValue);
 
-    // If there's already a pending operation and we're not waiting for second operand, evaluate first
     if (calcState.operator !== null && !calcState.waitingForSecond && !calcState.justEvaluated) {
       var result = performCalculation(calcState.firstOperand, calcState.operator, currentValue);
       if (result === 'Error') {
@@ -323,7 +338,6 @@
     calcState.waitingForSecond = true;
     calcState.justEvaluated = false;
 
-    // Highlight active operator button
     document.querySelectorAll('.calc-op-main').forEach(function (b) {
       b.classList.remove('active-op');
     });
@@ -355,7 +369,6 @@
       calcState.displayValue = resultStr;
     }
 
-    // Build expression string for history
     var exprFirst = calcState.expressionFirst !== null ? calcState.expressionFirst : String(calcState.firstOperand);
     var exprOp = calcState.expressionOp !== null ? calcState.expressionOp : calcState.operator;
     var expression = exprFirst + ' ' + exprOp + ' ' + secondStr;

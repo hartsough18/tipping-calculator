@@ -2,7 +2,7 @@
 
 ## What Was Built
 
-A fully functional tipping calculator and basic arithmetic calculator static web app. The app runs by opening `index.html` directly in any browser (`file://` — no web server required). It works entirely offline with no external dependencies.
+A fully functional tipping calculator and basic arithmetic calculator static web app. The app runs by opening `index.html` directly in any modern browser (`file://` — no web server required). It works entirely offline with no external dependencies.
 
 ## How to Open
 
@@ -12,60 +12,71 @@ Open `index.html` in any modern web browser. No server, no build step, no npm in
 
 | File | Role |
 |------|------|
-| `index.html` | Entry page — full markup for both calculator panels |
-| `styles.css` | Complete stylesheet — dark/light theme tokens, layout, responsive design |
-| `app.js` | All application logic — tip calculation, split bill, basic calculator, mode toggle, history |
+| `index.html` | Entry page — full markup for both calculator panels and history overlay popup |
+| `styles.css` | Complete stylesheet — dark/light theme tokens, layout, responsive design, viewport locking |
+| `app.js` | All application logic — tip calculation, split bill, basic calculator, mode toggle, history overlay |
 | `pwa_manifest.json` | Web App Manifest for PWA home-screen install |
-| `sw.js` | Service worker — caches app shell on install, serves from cache offline |
-| `icon-192.png` | PWA icon (192×192) |
-| `icon-512.png` | PWA icon (512×512) |
+| `sw.js` | Service worker — caches app shell on install, generates calculator-graphic PNG icons via OffscreenCanvas, serves from cache offline |
+| `icon-192.png` | PWA icon (192×192) — calculator graphic |
+| `icon-512.png` | PWA icon (512×512) — calculator graphic |
+| `favicon.svg` | Browser tab favicon — calculator graphic SVG |
+| `generate-icons.html` | Utility page to regenerate PNG icons via Canvas if needed |
 | `manifest.json` | Build manifest listing all files |
 | `review.md` | This completion report |
 
 ## Changes Made in This Iteration
 
-### Default View: Standard Calculator
-- The standard calculator panel is the active default on page load.
-- In `index.html`, the `active` class is on `tab-calc` and the `hidden` class is on `tip-panel`.
+### Tab Order Fixed: Calculator Left, Tip Calculator Right
+- In `index.html`, the mode toggle bar now reads: "Calculator" (left, `id="tab-calc"`) | "Tip Calculator" (right, `id="tab-tip"`).
+- The basic calculator panel (`#calc-panel`) is the first panel in the DOM and active by default.
+- The tip calculator panel (`#tip-panel`) is second and hidden by default.
+- `app.js` tab event listeners updated to match the new IDs and default state.
 
-### Header Removed
-- No `<header>` element exists. The mode toggle tab bar serves as the only mode label.
+### Dark Mode Toggle Bar Fixed
+- Both light and dark theme `:root` / `[data-theme="dark"]` now use `--color-mode-tab-bg: #334155` and `--color-mode-tab-text: #94a3b8` so the toggle bar is dark-colored in dark mode, consistent with the overall dark theme.
 
-### Calculator Buttons Enlarged
-- `.calc-btn` height: 78px, font-size: 1.45rem.
-- `.calc-equals` font-size: 1.65rem.
-- `.calc-display` font-size: 2.75rem.
+### History Panel Converted to Floating Overlay Popup
+- Removed the inline `#calc-history-panel` div from inside the calculator grid area.
+- Added a `#history-overlay` fixed-position overlay outside the main card, containing:
+  - `.history-backdrop` — a semi-transparent dimmed backdrop covering the full screen.
+  - `.history-popup` — a centered floating card with header, close (×) button, and history list.
+- Tapping the backdrop or the × button closes the popup.
+- The calculator layout beneath does not shift when the popup opens — it is a true overlay.
+- `app.js` updated: `openHistory()`, `closeHistory()`, `toggleHistory()` now control the overlay element. Backdrop click and close-button click both call `closeHistory()`.
 
-### Last 5 History Feature Added
-- A "Last 5" button was added to the calculator grid (bottom-left position, before the zero button).
-- Tapping "Last 5" toggles a history panel visible above the button grid.
-- The history panel lists up to 5 most recent completed calculations (expression + result), most recent first.
-- When no calculations have been made, the panel shows "No calculations yet".
-- When a new calculation completes (via `=`), the history array is updated and the panel re-renders if visible.
-- History persists when switching between tip calculator and basic calculator tabs.
-- The "Last 5" button highlights (primary color) when the history panel is open.
-- No history UI exists in the tip calculator panel.
+### Equals Button Full Width
+- In `index.html`, the equals button has class `calc-equals-full` added.
+- In `styles.css`, `.calc-equals-full` sets `grid-column: 1 / -1` and `border-radius: 39px; width: 100%` so it spans all four columns of the button grid.
+- The "Last 5", zero (span 2), and decimal buttons occupy the row above; the equals button occupies its own full-width row at the bottom.
 
-### Dark Mode (Default) — Preserved
-- `data-theme="dark"` on the `<html>` element.
+### Viewport Locked — No Vertical Scroll
+- `html, body` now have `height: 100%; overflow: hidden; touch-action: none; overscroll-behavior: none;`.
+- `.container` uses `height: 100%; max-height: 100vh; overflow: hidden;`.
+- `.card` uses `flex: 1; min-height: 0; overflow: hidden;`.
+- `#calc-panel` and `#tip-panel` use `flex: 1; min-height: 0; overflow: hidden;`.
+- `.calc-grid` uses `flex: 1; min-height: 0;` with fractional rows (`grid-template-rows: repeat(5, 1fr)`) so buttons fill available height proportionally.
+- No content overflows the screen on 375×667 or 390×844 viewports.
 
-### Number of People / Per-Person Split — Preserved
-- "Number of People" input and "Per Person" output row remain fully functional.
+### Calculator Graphic Icons
+- `favicon.svg` added: an SVG depicting a blue rounded-rectangle calculator with a display bar and a 3×2 grid of buttons (last button accent-colored for equals). Used as `<link rel="icon">` in `index.html`.
+- `sw.js` updated: on service worker install, `generateCalcIcon()` uses `OffscreenCanvas` to draw the same calculator graphic at 192px and 512px and stores the resulting PNG blobs in the cache, replacing any previously cached percent-symbol icons.
+- `generate-icons.html` added: a utility page that draws the same calculator graphic on two `<canvas>` elements and provides download links for `icon-192.png` and `icon-512.png`, so the actual PNG files on disk can be regenerated if needed.
+- `pwa_manifest.json` updated: `background_color` changed to `#0f172a` (dark), `theme_color` to `#3b82f6` (blue), icon `purpose` set to `"any maskable"`.
 
-### Clear Button — Preserved
-- Resets bill, people, active tip button, and all outputs.
+## Preserved Features
 
-### Mode Toggle — Preserved
-- Two-tab toggle bar ("Tip Calculator" / "Calculator") at the top of the card.
-
-### Basic Calculator — Preserved
-- All arithmetic operations, state machine, divide-by-zero error handling, and AC reset remain unchanged.
+- **Tip calculation**: bill input, 10%/20%/30% buttons, active state highlight, `—` default placeholders, auto-recalculate on input change, per-person split, clear button — all unchanged.
+- **Basic calculator**: all arithmetic operations (+, −, ×, ÷), negate, percent, decimal, AC reset, divide-by-zero error handling, operator highlight — all unchanged.
+- **History**: up to 5 most recent calculations stored in session memory, rendered in the popup, most recent first. History persists across tab switches.
+- **Dark mode default**: `data-theme="dark"` on `<html>`, dark CSS tokens applied on load.
+- **PWA installability**: manifest, service worker, and icons all present and correctly referenced.
+- **No header**: no `<header>` element anywhere in the app.
+- **Offline support**: service worker caches app shell on install and serves from cache when offline.
 
 ## Key Decisions
 
-- **History stored in JS array (not localStorage)**: History is session-only — it resets on page reload. This keeps the implementation simple and avoids persistence complexity.
-- **History capped at 5 entries**: The array is sliced to 5 after each push. The oldest entry is dropped when a 6th is added.
-- **History panel renders on demand**: `renderHistory()` is called when the panel is toggled open or when a new calculation completes while the panel is already visible. This avoids unnecessary DOM updates.
-- **Expression captured at `=` time**: The expression string (e.g. "50 + 25") is assembled from `expressionFirst`, `expressionOp`, and the second operand at the moment `=` is pressed, giving a clean human-readable history entry.
-- **"Last 5" button in the calc grid**: Placed in the bottom-left cell (where the zero button previously spanned), with the zero button now spanning only 2 columns. This keeps the grid layout intact without adding an extra row.
-- **Vanilla JS only**: No framework, no bundler, no CDN. Classic `<script src="app.js">` tag for `file://` compatibility.
+- **Overlay popup instead of inline panel**: The history popup is a `position: fixed` overlay so it never affects document flow or layout. The calculator grid stays exactly in place when the popup opens.
+- **SVG favicon**: An inline SVG file is the most reliable cross-browser favicon format and requires no build step. It renders the calculator graphic at any resolution.
+- **OffscreenCanvas in service worker for PNG icons**: Since we cannot run Node.js or a build step, the service worker generates the PNG icons programmatically on first install using `OffscreenCanvas`. This ensures the installed PWA icon is a calculator graphic, not a percent symbol.
+- **`grid-template-rows: repeat(5, 1fr)` on calc grid**: Combined with `flex: 1` on the grid container, this makes all button rows share the available height equally, preventing overflow on small screens.
+- **Tab order**: Calculator on left, Tip Calculator on right — matching the acceptance criterion exactly.
