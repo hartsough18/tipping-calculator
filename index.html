@@ -27,30 +27,46 @@
           <div class="calc-display" id="calc-display">0</div>
         </div>
 
+        <!--
+          Grid layout — 6 rows:
+            Row 1: AC  +/−  %  ÷
+            Row 2: 7   8    9  ×
+            Row 3: 4   5    6  −
+            Row 4: 1   2    3  +
+            Row 5: Last5  0(span2)  .      ← short row (0.6fr)
+            Row 6: =  =  =  =              ← tall row (1.5fr), full width
+        -->
         <div class="calc-grid">
+          <!-- Row 1 -->
           <button class="calc-btn calc-ac" data-action="ac">AC</button>
           <button class="calc-btn calc-op" data-action="op" data-op="negate">+/−</button>
           <button class="calc-btn calc-op" data-action="op" data-op="percent">%</button>
           <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="÷">÷</button>
 
+          <!-- Row 2 -->
           <button class="calc-btn calc-digit" data-action="digit" data-digit="7">7</button>
           <button class="calc-btn calc-digit" data-action="digit" data-digit="8">8</button>
           <button class="calc-btn calc-digit" data-action="digit" data-digit="9">9</button>
           <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="×">×</button>
 
+          <!-- Row 3 -->
           <button class="calc-btn calc-digit" data-action="digit" data-digit="4">4</button>
           <button class="calc-btn calc-digit" data-action="digit" data-digit="5">5</button>
           <button class="calc-btn calc-digit" data-action="digit" data-digit="6">6</button>
           <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="−">−</button>
 
+          <!-- Row 4 -->
           <button class="calc-btn calc-digit" data-action="digit" data-digit="1">1</button>
           <button class="calc-btn calc-digit" data-action="digit" data-digit="2">2</button>
           <button class="calc-btn calc-digit" data-action="digit" data-digit="3">3</button>
           <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="+">+</button>
 
+          <!-- Row 5 (short): Last 5 | 0 (span 2) | . -->
           <button class="calc-btn calc-history-btn" id="calc-history-btn" data-action="history">Last 5</button>
           <button class="calc-btn calc-digit calc-zero" data-action="digit" data-digit="0">0</button>
           <button class="calc-btn calc-digit" data-action="decimal">.</button>
+
+          <!-- Row 6 (tall): equals spans all 4 columns -->
           <button class="calc-btn calc-equals calc-equals-full" data-action="equals">=</button>
         </div>
       </div>

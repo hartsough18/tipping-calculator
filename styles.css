@@ -451,16 +451,26 @@ body {
   line-height: 1.1;
 }
 
-/* Calculator grid — fills remaining space */
+/*
+ * Calculator grid — 6 rows:
+ *   rows 1–4: normal button rows (1fr each)
+ *   row 5:    "Last 5" + zero + decimal — shorter row (0.6fr)
+ *   row 6:    equals — taller row (1.5fr)
+ *
+ * Standard digit/operator buttons use aspect-ratio: 1/1 so they
+ * render as circles regardless of row height.
+ * The equals button overrides aspect-ratio so it stays rectangular.
+ */
 .calc-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(5, 1fr);
+  grid-template-rows: repeat(4, 1fr) 0.6fr 1.5fr;
   gap: 8px;
   flex: 1;
   min-height: 0;
 }
 
+/* Base button styles */
 .calc-btn {
   padding: 0;
   font-size: 1.35rem;
@@ -474,9 +484,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Enforce square/circular shape for all standard buttons */
   width: 100%;
   height: 100%;
   min-height: 0;
+  aspect-ratio: 1 / 1;
+  /* Center within the grid cell */
+  justify-self: center;
+  align-self: center;
 }
 
 .calc-btn:active {
@@ -524,7 +539,12 @@ body {
   background: var(--color-calc-ac-hover);
 }
 
-/* Equals button — full width, spans all 4 columns */
+/*
+ * Equals button — full width, spans all 4 columns in its own row.
+ * Override aspect-ratio so it stays a wide rectangle, not a circle.
+ * Override border-radius so it looks like a pill/rectangle.
+ * Override justify-self/align-self so it fills the full cell width.
+ */
 .calc-equals {
   background: var(--color-primary);
   color: #ffffff;
@@ -538,10 +558,15 @@ body {
 .calc-equals-full {
   grid-column: 1 / -1;
   border-radius: 39px;
+  /* Override the circular aspect-ratio from .calc-btn */
+  aspect-ratio: unset;
   width: 100%;
+  height: 100%;
+  justify-self: stretch;
+  align-self: stretch;
 }
 
-/* History button */
+/* History button — in the short row; keep circular */
 .calc-history-btn {
   background: var(--color-calc-history-btn-bg);
   color: var(--color-calc-history-btn-text);
@@ -559,12 +584,20 @@ body {
   color: #ffffff;
 }
 
-/* Zero button spans 2 columns */
+/*
+ * Zero button — spans 2 columns in the short row.
+ * Override aspect-ratio so it stays a wide pill shape.
+ */
 .calc-zero {
   grid-column: span 2;
   border-radius: 39px;
   justify-content: flex-start;
   padding-left: 28px;
+  aspect-ratio: unset;
+  width: 100%;
+  height: 100%;
+  justify-self: stretch;
+  align-self: stretch;
 }
 
 /* ── History Overlay Popup ── */

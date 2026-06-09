@@ -26,57 +26,35 @@ Open `index.html` in any modern web browser. No server, no build step, no npm in
 
 ## Changes Made in This Iteration
 
-### Tab Order Fixed: Calculator Left, Tip Calculator Right
-- In `index.html`, the mode toggle bar now reads: "Calculator" (left, `id="tab-calc"`) | "Tip Calculator" (right, `id="tab-tip"`).
-- The basic calculator panel (`#calc-panel`) is the first panel in the DOM and active by default.
-- The tip calculator panel (`#tip-panel`) is second and hidden by default.
-- `app.js` tab event listeners updated to match the new IDs and default state.
+### Calculator Button Proportions — Circular Digit/Operator Buttons
 
-### Dark Mode Toggle Bar Fixed
-- Both light and dark theme `:root` / `[data-theme="dark"]` now use `--color-mode-tab-bg: #334155` and `--color-mode-tab-text: #94a3b8` so the toggle bar is dark-colored in dark mode, consistent with the overall dark theme.
+- Added `aspect-ratio: 1 / 1` to `.calc-btn` so every standard digit and operator button renders as a perfect circle regardless of the grid row height. Also added `justify-self: center; align-self: center` so each button centers within its grid cell.
+- The equals button (`.calc-equals-full`) overrides `aspect-ratio: unset`, `justify-self: stretch`, and `align-self: stretch` so it remains a wide rectangular pill filling its full row width.
+- The zero button (`.calc-zero`) similarly overrides `aspect-ratio: unset` and stretches to fill its two-column span as a pill shape.
 
-### History Panel Converted to Floating Overlay Popup
-- Removed the inline `#calc-history-panel` div from inside the calculator grid area.
-- Added a `#history-overlay` fixed-position overlay outside the main card, containing:
-  - `.history-backdrop` — a semi-transparent dimmed backdrop covering the full screen.
-  - `.history-popup` — a centered floating card with header, close (×) button, and history list.
-- Tapping the backdrop or the × button closes the popup.
-- The calculator layout beneath does not shift when the popup opens — it is a true overlay.
-- `app.js` updated: `openHistory()`, `closeHistory()`, `toggleHistory()` now control the overlay element. Backdrop click and close-button click both call `closeHistory()`.
+### Calculator Grid — 6 Rows with Distinct Heights
 
-### Equals Button Full Width
-- In `index.html`, the equals button has class `calc-equals-full` added.
-- In `styles.css`, `.calc-equals-full` sets `grid-column: 1 / -1` and `border-radius: 39px; width: 100%` so it spans all four columns of the button grid.
-- The "Last 5", zero (span 2), and decimal buttons occupy the row above; the equals button occupies its own full-width row at the bottom.
+- Changed `grid-template-rows` from `repeat(5, 1fr)` to `repeat(4, 1fr) 0.6fr 1.5fr`:
+  - Rows 1–4 (`1fr` each): standard button rows for AC/+−/%/÷, 7–9/×, 4–6/−, 1–3/+.
+  - Row 5 (`0.6fr`): the "Last 5" / zero / decimal row — noticeably shorter than a standard row.
+  - Row 6 (`1.5fr`): the equals (=) row — noticeably taller than a standard row.
+- Updated `index.html` to move the equals button into its own row (row 6), separate from the "Last 5"/zero/decimal row (row 5). Previously all five buttons shared one row; now rows 5 and 6 are distinct.
 
-### Viewport Locked — No Vertical Scroll
-- `html, body` now have `height: 100%; overflow: hidden; touch-action: none; overscroll-behavior: none;`.
-- `.container` uses `height: 100%; max-height: 100vh; overflow: hidden;`.
-- `.card` uses `flex: 1; min-height: 0; overflow: hidden;`.
-- `#calc-panel` and `#tip-panel` use `flex: 1; min-height: 0; overflow: hidden;`.
-- `.calc-grid` uses `flex: 1; min-height: 0;` with fractional rows (`grid-template-rows: repeat(5, 1fr)`) so buttons fill available height proportionally.
-- No content overflows the screen on 375×667 or 390×844 viewports.
-
-### Calculator Graphic Icons
-- `favicon.svg` added: an SVG depicting a blue rounded-rectangle calculator with a display bar and a 3×2 grid of buttons (last button accent-colored for equals). Used as `<link rel="icon">` in `index.html`.
-- `sw.js` updated: on service worker install, `generateCalcIcon()` uses `OffscreenCanvas` to draw the same calculator graphic at 192px and 512px and stores the resulting PNG blobs in the cache, replacing any previously cached percent-symbol icons.
-- `generate-icons.html` added: a utility page that draws the same calculator graphic on two `<canvas>` elements and provides download links for `icon-192.png` and `icon-512.png`, so the actual PNG files on disk can be regenerated if needed.
-- `pwa_manifest.json` updated: `background_color` changed to `#0f172a` (dark), `theme_color` to `#3b82f6` (blue), icon `purpose` set to `"any maskable"`.
-
-## Preserved Features
+### Preserved Features
 
 - **Tip calculation**: bill input, 10%/20%/30% buttons, active state highlight, `—` default placeholders, auto-recalculate on input change, per-person split, clear button — all unchanged.
 - **Basic calculator**: all arithmetic operations (+, −, ×, ÷), negate, percent, decimal, AC reset, divide-by-zero error handling, operator highlight — all unchanged.
-- **History**: up to 5 most recent calculations stored in session memory, rendered in the popup, most recent first. History persists across tab switches.
+- **History popup**: up to 5 most recent calculations stored in session memory, rendered in the floating overlay popup, most recent first. History persists across tab switches. Backdrop click and × button both close the popup.
 - **Dark mode default**: `data-theme="dark"` on `<html>`, dark CSS tokens applied on load.
 - **PWA installability**: manifest, service worker, and icons all present and correctly referenced.
 - **No header**: no `<header>` element anywhere in the app.
 - **Offline support**: service worker caches app shell on install and serves from cache when offline.
+- **No vertical scroll**: `html, body` locked with `overflow: hidden`, all panels use `flex: 1; min-height: 0` to fit within viewport.
+- **Mode toggle**: Calculator tab on left, Tip Calculator tab on right; exactly one panel visible at a time.
 
 ## Key Decisions
 
-- **Overlay popup instead of inline panel**: The history popup is a `position: fixed` overlay so it never affects document flow or layout. The calculator grid stays exactly in place when the popup opens.
-- **SVG favicon**: An inline SVG file is the most reliable cross-browser favicon format and requires no build step. It renders the calculator graphic at any resolution.
-- **OffscreenCanvas in service worker for PNG icons**: Since we cannot run Node.js or a build step, the service worker generates the PNG icons programmatically on first install using `OffscreenCanvas`. This ensures the installed PWA icon is a calculator graphic, not a percent symbol.
-- **`grid-template-rows: repeat(5, 1fr)` on calc grid**: Combined with `flex: 1` on the grid container, this makes all button rows share the available height equally, preventing overflow on small screens.
-- **Tab order**: Calculator on left, Tip Calculator on right — matching the acceptance criterion exactly.
+- **Separate equals row in HTML**: Moving the equals button to its own grid row (rather than using `grid-column: 1/-1` in a shared row) is the cleanest way to give it an independently controlled height via `grid-template-rows`, while keeping the "Last 5" row short.
+- **`aspect-ratio: 1/1` on `.calc-btn`**: This is the most reliable cross-browser way to enforce circular buttons regardless of the row's `fr` height. Combined with `justify-self: center` it keeps each button centered and circular within its cell.
+- **`aspect-ratio: unset` on equals and zero**: These buttons must span multiple columns and fill their cells as rectangles/pills, so the circular constraint is explicitly removed.
+- **`0.6fr` for Last 5 row, `1.5fr` for equals row**: These fractional values produce a visually obvious size difference (Last 5 row is ~60% of normal, equals row is ~150% of normal) without requiring pixel-level calculations that might break on different viewport heights.
