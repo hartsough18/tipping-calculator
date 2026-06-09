@@ -2,21 +2,57 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>Tip Calculator</title>
   <link rel="manifest" href="pwa_manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
     <main class="card">
-      <!-- Mode Toggle -->
+      <!-- Mode Toggle: Calculator (left), Tip Calculator (right) -->
       <div class="mode-toggle-bar">
-        <button class="mode-tab" id="tab-tip" data-mode="tip">Tip Calculator</button>
         <button class="mode-tab active" id="tab-calc" data-mode="calc">Calculator</button>
+        <button class="mode-tab" id="tab-tip" data-mode="tip">Tip Calculator</button>
+      </div>
+
+      <!-- Basic Calculator Panel (visible by default) -->
+      <div id="calc-panel">
+        <div class="calc-display-wrapper">
+          <div class="calc-display" id="calc-display">0</div>
+        </div>
+
+        <div class="calc-grid">
+          <button class="calc-btn calc-ac" data-action="ac">AC</button>
+          <button class="calc-btn calc-op" data-action="op" data-op="negate">+/−</button>
+          <button class="calc-btn calc-op" data-action="op" data-op="percent">%</button>
+          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="÷">÷</button>
+
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="7">7</button>
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="8">8</button>
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="9">9</button>
+          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="×">×</button>
+
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="4">4</button>
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="5">5</button>
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="6">6</button>
+          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="−">−</button>
+
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="1">1</button>
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="2">2</button>
+          <button class="calc-btn calc-digit" data-action="digit" data-digit="3">3</button>
+          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="+">+</button>
+
+          <button class="calc-btn calc-history-btn" id="calc-history-btn" data-action="history">Last 5</button>
+          <button class="calc-btn calc-digit calc-zero" data-action="digit" data-digit="0">0</button>
+          <button class="calc-btn calc-digit" data-action="decimal">.</button>
+          <button class="calc-btn calc-equals calc-equals-full" data-action="equals">=</button>
+        </div>
       </div>
 
       <!-- Tip Calculator Panel (hidden by default) -->
@@ -82,49 +118,21 @@
           <button class="clear-btn" id="clear-btn">Clear</button>
         </div>
       </div>
-
-      <!-- Basic Calculator Panel (visible by default) -->
-      <div id="calc-panel">
-        <div class="calc-display-wrapper">
-          <div class="calc-display" id="calc-display">0</div>
-        </div>
-
-        <!-- History Panel (hidden by default, toggled by Last 5 button) -->
-        <div id="calc-history-panel" class="calc-history-panel hidden">
-          <div class="calc-history-header">Recent Calculations</div>
-          <ul class="calc-history-list" id="calc-history-list">
-            <li class="calc-history-empty">No calculations yet</li>
-          </ul>
-        </div>
-
-        <div class="calc-grid">
-          <button class="calc-btn calc-ac" data-action="ac">AC</button>
-          <button class="calc-btn calc-op" data-action="op" data-op="negate">+/−</button>
-          <button class="calc-btn calc-op" data-action="op" data-op="percent">%</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="÷">÷</button>
-
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="7">7</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="8">8</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="9">9</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="×">×</button>
-
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="4">4</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="5">5</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="6">6</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="−">−</button>
-
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="1">1</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="2">2</button>
-          <button class="calc-btn calc-digit" data-action="digit" data-digit="3">3</button>
-          <button class="calc-btn calc-op calc-op-main" data-action="op" data-op="+">+</button>
-
-          <button class="calc-btn calc-history-btn" id="calc-history-btn" data-action="history">Last 5</button>
-          <button class="calc-btn calc-digit calc-zero" data-action="digit" data-digit="0">0</button>
-          <button class="calc-btn calc-digit" data-action="decimal">.</button>
-          <button class="calc-btn calc-equals" data-action="equals">=</button>
-        </div>
-      </div>
     </main>
+  </div>
+
+  <!-- History Overlay Popup -->
+  <div id="history-overlay" class="history-overlay hidden" aria-modal="true" role="dialog" aria-label="Recent Calculations">
+    <div class="history-backdrop" id="history-backdrop"></div>
+    <div class="history-popup">
+      <div class="history-popup-header">
+        <span class="history-popup-title">Recent Calculations</span>
+        <button class="history-popup-close" id="history-popup-close" aria-label="Close">&times;</button>
+      </div>
+      <ul class="calc-history-list" id="calc-history-list">
+        <li class="calc-history-empty">No calculations yet</li>
+      </ul>
+    </div>
   </div>
 
   <script src="app.js"></script>
