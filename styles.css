@@ -139,10 +139,16 @@ body {
   max-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* Center the card vertically when it doesn't fill full height (tip mode) */
+  justify-content: center;
   overflow: hidden;
   min-width: 0;
 }
 
+/*
+ * .card — default (calc mode): flex: 1 so the calculator grid fills height.
+ * .card.tip-mode: flex: 0 0 auto so the tip panel sizes to intrinsic content.
+ */
 .card {
   background: var(--color-card);
   border-radius: var(--radius-card);
@@ -150,11 +156,22 @@ body {
   padding: 16px 20px 20px;
   display: flex;
   flex-direction: column;
+  /* Default: fill available height for the calculator grid */
   flex: 1;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
   width: 100%;
+}
+
+/*
+ * Tip mode: card sizes to its natural content height instead of stretching.
+ * The container's justify-content: center then vertically centers it.
+ */
+.card.tip-mode {
+  flex: 0 0 auto;
+  height: auto;
+  overflow: visible;
 }
 
 /* Mode Toggle */
@@ -204,10 +221,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  flex: 1;
-  min-height: 0;
+  /* Do NOT use flex: 1 here — let it size to content */
   min-width: 0;
-  overflow: hidden;
   width: 100%;
 }
 
@@ -335,23 +350,35 @@ body {
   gap: 10px;
   width: 100%;
   min-width: 0;
+  /* Use a fixed row height so buttons are square/circular */
+  align-items: center;
 }
 
+/*
+ * Tip buttons — circular.
+ * We use aspect-ratio: 1/1 and let flex sizing determine the width.
+ * Each button takes 1/3 of the row minus gaps.
+ */
 .tip-btn {
   flex: 1;
   min-width: 0;
-  padding: 14px 8px;
+  /* aspect-ratio forces height = width, making them circular */
+  aspect-ratio: 1 / 1;
+  padding: 0;
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--color-primary);
   background: var(--color-tip-btn-bg);
   border: 2px solid var(--color-tip-btn-border);
-  border-radius: var(--radius-btn);
+  border-radius: 50%;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tip-btn:hover {
@@ -461,10 +488,9 @@ body {
 #tip-panel {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
+  /* Do NOT use flex: 1 — size to content */
+  flex: 0 0 auto;
   min-width: 0;
-  overflow: hidden;
   width: 100%;
 }
 
@@ -774,7 +800,6 @@ body {
 
   .tip-btn {
     font-size: 1rem;
-    padding: 12px 4px;
   }
 
   #bill-amount {

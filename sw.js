@@ -1,4 +1,4 @@
-var CACHE_NAME = 'tip-calculator-v7';
+var CACHE_NAME = 'tip-calculator-v8';
 var APP_SHELL = [
   './',
   './index.html',

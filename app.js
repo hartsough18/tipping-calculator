@@ -113,12 +113,15 @@
   var calcPanel = document.getElementById('calc-panel');
   var tabTip = document.getElementById('tab-tip');
   var tabCalc = document.getElementById('tab-calc');
+  var card = document.querySelector('.card');
 
   tabCalc.addEventListener('click', function () {
     tabCalc.classList.add('active');
     tabTip.classList.remove('active');
     calcPanel.classList.remove('hidden');
     tipPanel.classList.add('hidden');
+    // Calc mode: card fills available height for the button grid
+    card.classList.remove('tip-mode');
   });
 
   tabTip.addEventListener('click', function () {
@@ -126,6 +129,8 @@
     tabCalc.classList.remove('active');
     tipPanel.classList.remove('hidden');
     calcPanel.classList.add('hidden');
+    // Tip mode: card sizes to intrinsic content height
+    card.classList.add('tip-mode');
   });
 
   /* ── Basic Calculator ── */
