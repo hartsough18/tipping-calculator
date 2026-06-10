@@ -26,19 +26,20 @@ Open `index.html` in any modern web browser. No server, no build step, no npm in
 
 ## Changes Made in This Iteration
 
-### Calculator Button Proportions — Circular Digit/Operator Buttons
+### Responsive Layout — No Horizontal Overflow on Any Viewport
 
-- Added `aspect-ratio: 1 / 1` to `.calc-btn` so every standard digit and operator button renders as a perfect circle regardless of the grid row height. Also added `justify-self: center; align-self: center` so each button centers within its grid cell.
-- The equals button (`.calc-equals-full`) overrides `aspect-ratio: unset`, `justify-self: stretch`, and `align-self: stretch` so it remains a wide rectangular pill filling its full row width.
-- The zero button (`.calc-zero`) similarly overrides `aspect-ratio: unset` and stretches to fill its two-column span as a pill shape.
+#### index.html
+- Removed `maximum-scale=1` and `user-scalable=no` from the viewport meta tag. The tag now reads `content="width=device-width, initial-scale=1.0"` — the clean standard form that allows the browser to scale content correctly on all devices without clamping.
 
-### Calculator Grid — 6 Rows with Distinct Heights
-
-- Changed `grid-template-rows` from `repeat(5, 1fr)` to `repeat(4, 1fr) 0.6fr 1.5fr`:
-  - Rows 1–4 (`1fr` each): standard button rows for AC/+−/%/÷, 7–9/×, 4–6/−, 1–3/+.
-  - Row 5 (`0.6fr`): the "Last 5" / zero / decimal row — noticeably shorter than a standard row.
-  - Row 6 (`1.5fr`): the equals (=) row — noticeably taller than a standard row.
-- Updated `index.html` to move the equals button into its own row (row 6), separate from the "Last 5"/zero/decimal row (row 5). Previously all five buttons shared one row; now rows 5 and 6 are distinct.
+#### styles.css
+- Added `overflow-x: hidden` explicitly alongside the existing `overflow: hidden` on `html, body` to guarantee no horizontal bleed escapes at the root level.
+- Added `width: 100%; max-width: 100vw;` to `body` so it never exceeds the viewport width.
+- Added `min-width: 0` to `.container`, `.card`, `#calc-panel`, `#tip-panel`, `.tip-panel-inner`, `.input-group`, `.input-wrapper`, `.tip-buttons-group`, `.tip-buttons`, `.results`, `.result-row`, `.calc-grid`, `.calc-btn`, `.calc-display`, and `.mode-toggle-bar` — this is the key fix for flex/grid children that can otherwise overflow their parent when content is wide.
+- Added `width: 100%` to `.card`, `#calc-panel`, `#tip-panel`, `.tip-panel-inner`, `.input-group`, `.input-wrapper`, `.tip-buttons-group`, `.tip-buttons`, `.results`, `.clear-btn`, `.calc-display-wrapper`, and `.calc-grid` to ensure all panel elements fill their container fluidly rather than relying solely on flex stretch.
+- Added `box-sizing: border-box` explicitly to `.card`, `.mode-toggle-bar`, `.mode-tab`, `.tip-btn`, `#bill-amount`, `#num-people`, `.results`, `.clear-btn`, `.calc-display-wrapper`, `.calc-grid`, and `.calc-btn` — even though the global `*` rule already sets this, the explicit declarations make the intent clear and guard against any specificity edge cases.
+- Added `min-width: 0` to `.mode-tab` and `flex: 1; min-width: 0` to `.tip-btn` so the three tip buttons and the two mode tabs shrink fluidly on narrow viewports rather than overflowing.
+- Added `flex-shrink: 0` to `.result-label` and `text-align: right; min-width: 0` to `.result-value` so the results row wraps gracefully without the value label pushing outside the card.
+- Added `max-width: 100%` to `.calc-display` so very long numbers wrap within the display area.
 
 ### Preserved Features
 
@@ -51,10 +52,12 @@ Open `index.html` in any modern web browser. No server, no build step, no npm in
 - **Offline support**: service worker caches app shell on install and serves from cache when offline.
 - **No vertical scroll**: `html, body` locked with `overflow: hidden`, all panels use `flex: 1; min-height: 0` to fit within viewport.
 - **Mode toggle**: Calculator tab on left, Tip Calculator tab on right; exactly one panel visible at a time.
+- **Circular calculator buttons**: `aspect-ratio: 1/1` on `.calc-btn` preserved; equals and zero override with `aspect-ratio: unset` as before.
+- **6-row grid**: `grid-template-rows: repeat(4, 1fr) 0.6fr 1.5fr` preserved — short Last 5 row, tall equals row.
 
 ## Key Decisions
 
-- **Separate equals row in HTML**: Moving the equals button to its own grid row (rather than using `grid-column: 1/-1` in a shared row) is the cleanest way to give it an independently controlled height via `grid-template-rows`, while keeping the "Last 5" row short.
-- **`aspect-ratio: 1/1` on `.calc-btn`**: This is the most reliable cross-browser way to enforce circular buttons regardless of the row's `fr` height. Combined with `justify-self: center` it keeps each button centered and circular within its cell.
-- **`aspect-ratio: unset` on equals and zero**: These buttons must span multiple columns and fill their cells as rectangles/pills, so the circular constraint is explicitly removed.
-- **`0.6fr` for Last 5 row, `1.5fr` for equals row**: These fractional values produce a visually obvious size difference (Last 5 row is ~60% of normal, equals row is ~150% of normal) without requiring pixel-level calculations that might break on different viewport heights.
+- **`min-width: 0` on all flex/grid children**: The single most impactful responsive fix. Flex items default to `min-width: auto`, which means they refuse to shrink below their content size. Adding `min-width: 0` allows every panel child to shrink to fit the available space, eliminating overflow on narrow viewports.
+- **`overflow-x: hidden` on html and body**: Belt-and-suspenders guard. Even if some child element somehow escapes the flex containment, the root-level overflow clip prevents a horizontal scrollbar from appearing.
+- **Removing `user-scalable=no` and `maximum-scale=1`**: These attributes were preventing the browser from correctly computing the initial layout width on some mobile browsers, and also harm accessibility. The clean `width=device-width, initial-scale=1.0` viewport is the correct standard form.
+- **No visual changes**: All colors, spacing, typography, and interactive behaviors are byte-for-byte identical to the previous iteration. Only the overflow/sizing properties were touched.
