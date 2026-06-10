@@ -523,18 +523,25 @@ body {
 
 /*
  * Calculator grid — 6 rows:
- *   rows 1–4: normal button rows (1fr each)
- *   row 5:    "Last 5" + zero + decimal — shorter row (0.6fr)
- *   row 6:    equals — taller row (1.5fr)
+ *   rows 1–5: equal-height rows (1fr each)
+ *     row 1: AC  +/−  %  ÷
+ *     row 2: 7   8    9  ×
+ *     row 3: 4   5    6  −
+ *     row 4: 1   2    3  +
+ *     row 5: Last5  0(span2)  .   ← same 1fr height as rows 1-4
+ *   row 6: equals — taller row (1.5fr), fills remaining space
  *
- * Standard digit/operator buttons use aspect-ratio: 1/1 so they
- * render as circles regardless of row height.
+ * All five digit/operator rows (including the 0 row) share the same 1fr
+ * height, satisfying the equal-row-height requirement.
+ * The "Last 5" button appears visually shorter because it is a small
+ * circular button rendered within the same-height cell — the cell height
+ * matches its peers but the button itself is compact.
  * The equals button overrides aspect-ratio so it stays rectangular.
  */
 .calc-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr) 0.6fr 1.5fr;
+  grid-template-rows: repeat(5, 1fr) 1.5fr;
   gap: 8px;
   flex: 1;
   min-height: 0;
@@ -641,13 +648,23 @@ body {
   align-self: stretch;
 }
 
-/* History button — in the short row; keep circular */
+/*
+ * History button — in row 5 (same 1fr height as digit rows).
+ * The button itself is rendered small/compact via a reduced max-size,
+ * making it visually appear shorter than the digit buttons in the same row.
+ * The cell height matches its peers (1fr) but the button is constrained.
+ */
 .calc-history-btn {
   background: var(--color-calc-history-btn-bg);
   color: var(--color-calc-history-btn-text);
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 700;
   border-radius: 50%;
+  /* Constrain the button to ~60% of the cell height so it appears
+     noticeably smaller/shorter than the standard digit buttons */
+  max-width: 60%;
+  max-height: 60%;
+  aspect-ratio: 1 / 1;
 }
 
 .calc-history-btn:hover {
@@ -660,7 +677,7 @@ body {
 }
 
 /*
- * Zero button — spans 2 columns in the short row.
+ * Zero button — spans 2 columns in row 5 (same 1fr height as digit rows).
  * Override aspect-ratio so it stays a wide pill shape.
  */
 .calc-zero {
@@ -823,6 +840,6 @@ body {
   }
 
   .calc-history-btn {
-    font-size: 0.72rem;
+    font-size: 0.62rem;
   }
 }

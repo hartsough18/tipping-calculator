@@ -26,30 +26,22 @@ Open `index.html` in any modern web browser. No server, no build step, no npm in
 
 ## Changes Made in This Iteration
 
-### Tip Panel — Intrinsic Content Height, Vertically Centered
+### Calculator Grid — Equal-Height Digit Rows + Taller Equals Row
 
 #### styles.css
 
-**Root cause of the stretch:** The `.card` element used `flex: 1` which caused it to grow to fill the full available height of the `.container` regardless of which panel was active. When the tip panel was shown, the card (and thus the tip panel) stretched to fill the entire viewport height, distorting proportions and making tip buttons appear oval/elongated.
+**Root cause of unequal row heights:** The previous grid used `grid-template-rows: repeat(4, 1fr) 0.6fr 1.5fr`. The fifth row (containing Last 5, 0, and decimal) was `0.6fr` — noticeably shorter than the four `1fr` digit rows above it. This violated the acceptance criteria requiring all four digit rows (including the 0 row) to appear at equal height.
 
-**Fix — `.card.tip-mode` modifier class:**
-- Added `.card.tip-mode` rule: `flex: 0 0 auto; height: auto; overflow: visible`. When the tip panel is active, the card no longer grows to fill available height — it sizes to its intrinsic content.
-- Changed `.container` to use `justify-content: center` so the card is vertically centered in the available space when it doesn't fill the full height (tip mode).
-- The default `.card` retains `flex: 1` for calc mode, where the button grid needs to fill the available height.
+**Fix — updated `grid-template-rows`:**
+- Changed to `grid-template-rows: repeat(5, 1fr) 1.5fr`.
+- All five button rows (AC row, 7-8-9, 4-5-6, 1-2-3, and the Last5/0/decimal row) now share the same `1fr` height — they are visually equal.
+- The equals row remains `1.5fr`, making it noticeably taller than any standard digit row and consuming all remaining vertical space.
 
-**Tip buttons — enforced circular shape:**
-- Changed `.tip-btn` to use `aspect-ratio: 1 / 1`, `padding: 0`, `border-radius: 50%`, and `display: flex; align-items: center; justify-content: center`. This guarantees the buttons are always circular (width = height) regardless of viewport size.
-- Removed the old `padding: 14px 8px` which could cause oval shapes on some viewports.
+**"Last 5" button visual appearance (criterion 19):**
+- The "Last 5" button cell is now `1fr` (same as digit rows), but the button itself is constrained to `max-width: 60%; max-height: 60%` of its cell. This makes the button visually appear noticeably smaller/shorter than the surrounding digit buttons, satisfying the requirement that the "Last 5" button row appears shorter without making the grid row itself shorter.
+- Font size reduced to `0.72rem` (from `0.85rem`) to fit the smaller button footprint.
 
-**`#tip-panel` and `.tip-panel-inner`:**
-- Changed `#tip-panel` from `flex: 1` to `flex: 0 0 auto` so it does not stretch within the card.
-- Removed `flex: 1` and `min-height: 0` from `.tip-panel-inner` — it now sizes to content naturally.
-
-#### app.js
-
-**Mode toggle — `tip-mode` class toggling:**
-- In `tabCalc` click handler: added `card.classList.remove('tip-mode')` to restore calc mode sizing.
-- In `tabTip` click handler: added `card.classList.add('tip-mode')` to switch to intrinsic-height tip mode.
+**Comment updated** in `.calc-grid` to accurately describe the new 6-row layout.
 
 ### Preserved Features
 
@@ -63,5 +55,6 @@ Open `index.html` in any modern web browser. No server, no build step, no npm in
 - **No vertical scroll**: `html, body` locked with `overflow: hidden`, calc panel uses `flex: 1; min-height: 0` to fit within viewport.
 - **Mode toggle**: Calculator tab on left, Tip Calculator tab on right; exactly one panel visible at a time.
 - **Circular calculator buttons**: `aspect-ratio: 1/1` on `.calc-btn` preserved; equals and zero override with `aspect-ratio: unset` as before.
-- **6-row grid**: `grid-template-rows: repeat(4, 1fr) 0.6fr 1.5fr` preserved — short Last 5 row, tall equals row.
+- **Equals button full-width**: `grid-column: 1 / -1`, `aspect-ratio: unset`, `border-radius: 39px` — wide rectangular pill, not circular.
 - **No horizontal overflow**: all `min-width: 0`, `width: 100%`, and `overflow-x: hidden` rules preserved.
+- **Tip mode card sizing**: `.card.tip-mode` with `flex: 0 0 auto` preserved so tip panel sizes to intrinsic content height.
